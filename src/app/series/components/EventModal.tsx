@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import Image from 'next/image';
 import { ChangeEvent, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 import Modal from '@/app/components/Modal';
 import Controller from '@/app/components/ui/Controller';
@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function EventModal({ visible, onClose, data, onSubmit }: Props) {
-  const { control, handleSubmit, reset, watch } = useForm<Event>({
+  const { control, handleSubmit, reset, resetField } = useForm<Event>({
     resolver: yupResolver(eventSchema),
     defaultValues: DEFAULT_EVENT_VALUES,
   });
@@ -43,7 +43,7 @@ export default function EventModal({ visible, onClose, data, onSubmit }: Props) 
     else return date;
   }
 
-  const banner = watch('banner');
+  const banner = useWatch({ control, name: 'banner', defaultValue: data?.banner });
   return (
     <Modal visible={visible} onClose={onClose}>
       <h3 className="font-bold text-xl sm:text-2xl">{data ? 'Edit' : 'Add'} Event</h3>

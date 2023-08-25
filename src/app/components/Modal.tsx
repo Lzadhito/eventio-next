@@ -1,4 +1,5 @@
 import { ReactElement, useEffect } from 'react';
+
 import Icon from './Icon';
 
 interface Props {
@@ -27,7 +28,7 @@ export default function Modal({ children, visible, onClose }: Props) {
 
   return (
     <dialog id="Modal" className="modal modal-bottom sm:modal-middle">
-      <div className="modal-box min-h-fit max-h-screen relative">
+      <div className="modal-box min-h-fit max-h-screen relative min-w-fit sm:max-h-[calc(100vh-5em)]">
         <button className="btn btn-circle bg-transparent absolute top-4 right-4" onClick={() => window.Modal.close()}>
           <Icon icon="remove" />
         </button>
