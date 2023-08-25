@@ -1,16 +1,15 @@
-import { ChangeEvent, useEffect } from 'react';
-
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, useWatch } from 'react-hook-form';
+import Image from 'next/image';
+import { ChangeEvent, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
+import Modal from '@/app/components/Modal';
 import Controller from '@/app/components/ui/Controller';
 import { eventSchema } from '@/schemas/eventSeries';
+import { RHFOnChange } from '@/types';
 import type { Event } from '@/types/event';
 
 import { DEFAULT_EVENT_VALUES } from '../constants';
-import { RHFOnChange } from '@/types';
-import Icon from '@/app/components/Icon';
-import Modal from '@/app/components/Modal';
 
 interface Props {
   visible: boolean;
@@ -20,7 +19,7 @@ interface Props {
 }
 
 export default function EventModal({ visible, onClose, data, onSubmit }: Props) {
-  const { control, handleSubmit, reset } = useForm<Event>({
+  const { control, handleSubmit, reset, watch } = useForm<Event>({
     resolver: yupResolver(eventSchema),
     defaultValues: DEFAULT_EVENT_VALUES,
   });
@@ -28,7 +27,7 @@ export default function EventModal({ visible, onClose, data, onSubmit }: Props) 
   // Use data on Edit
   useEffect(() => {
     if (data) reset(data);
-  }, [data]);
+  }, [data, reset]);
 
   function handleSaveEvent(data: any) {
     onSubmit(data);
@@ -39,12 +38,12 @@ export default function EventModal({ visible, onClose, data, onSubmit }: Props) 
     rhfOnChange(e.target.files[0]);
   }
 
-  function generateValue(date: Date | string) {
+  function generateDate(date: Date | string) {
     if (date instanceof Date) return date.toISOString().substring(0, 16);
     else return date;
   }
 
-  const banner = useWatch({ control, name: 'banner' });
+  const banner = watch('banner');
   return (
     <Modal visible={visible} onClose={onClose}>
       <h3 className="font-bold text-xl sm:text-2xl">{data ? 'Edit' : 'Add'} Event</h3>
@@ -60,14 +59,23 @@ export default function EventModal({ visible, onClose, data, onSubmit }: Props) 
           />
         </Controller>
 
-        {banner && <img src={URL.createObjectURL(banner as Blob)} width="700" className="contain" />}
+        {banner && (
+          <Image
+            height="100"
+            unoptimized
+            alt="banner-preview"
+            src={URL.createObjectURL(banner as Blob)}
+            width="500"
+            className="contain"
+          />
+        )}
         <Controller
+          valuePropName="files"
           name="banner"
           secondaryLabel="optional"
           control={control}
           label="Event Banner"
           onChange={handleChangeBanner}
-          generateValue={(file) => file?.fileName}
         >
           <input
             accept="image/*"
@@ -82,11 +90,11 @@ export default function EventModal({ visible, onClose, data, onSubmit }: Props) 
           </label>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Controller generateValue={generateValue} control={control} name="startDate" label={<sub>Start Date</sub>}>
+            <Controller generateValue={generateDate} control={control} name="startDate" label={<sub>Start Date</sub>}>
               <input type="datetime-local" className="input w-full input-bordered" />
             </Controller>
 
-            <Controller generateValue={generateValue} control={control} name="endDate" label={<sub>End Date</sub>}>
+            <Controller generateValue={generateDate} control={control} name="endDate" label={<sub>End Date</sub>}>
               <input type="datetime-local" className="input w-full input-bordered" />
             </Controller>
           </div>

@@ -1,18 +1,19 @@
 'use client';
 import { yupResolver } from '@hookform/resolvers/yup';
+import clsx from 'clsx';
+import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 
-import EventModal from '@/app/series/components/EventModal';
+import Icon from '@/app/components/Icon';
 import Controller from '@/app/components/ui/Controller';
 import Navbar from '@/app/components/ui/Navbar';
+import EventModal from '@/app/series/components/EventModal';
 import { seriesSchema } from '@/schemas/eventSeries';
 import { Event } from '@/types/event';
-import EventRow from './EventRow';
-import { useState } from 'react';
 import { Series } from '@/types/series';
+
 import { DEFAULT_SERIES_VALUES } from './constants';
-import clsx from 'clsx';
-import Icon from '@/app/components/Icon';
+import EventRow from './EventRow';
 
 export default function AddSeriesPage() {
   const [selectedEvent, setSelectedEvent] = useState<Event>();
